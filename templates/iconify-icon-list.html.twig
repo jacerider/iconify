@@ -1,0 +1,5 @@
+<ul{{ attributes.addClass('iconify-icon-list') }}>
+  {% for icon in icons  %}
+    <li><i {{ attributes.addClass(icon) }}></i> <span>{{ icon }}</span></li>
+  {% endfor %}
+</ul>

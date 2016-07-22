@@ -1,0 +1,21 @@
+# Iconify package routing definition
+iconify.settings_tab:
+  route_name: iconify.settings
+  title: 'Settings'
+  base_route: iconify.settings
+entity.iconify.canonical:
+  route_name: entity.iconify.canonical
+  base_route: entity.iconify.canonical
+  title: 'View'
+
+entity.iconify.edit_form:
+  route_name: entity.iconify.edit_form
+  base_route: entity.iconify.canonical
+  title: Edit
+
+entity.iconify.delete_form:
+  route_name:  entity.iconify.delete_form
+  base_route:  entity.iconify.canonical
+  title: Delete
+  weight: 10
+

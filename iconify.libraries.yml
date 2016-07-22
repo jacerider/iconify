@@ -1,0 +1,9 @@
+iconify:
+  version: VERSION
+  css:
+    theme: []
+iconify.ui:
+  version: VERSION
+  css:
+    component:
+      css/iconify.ui.css: {}

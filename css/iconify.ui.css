@@ -1,0 +1,22 @@
+.iconify-icon-list {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.iconify-icon-list > li {
+  list-style-type: none;
+  display: inline-block;
+  width: 200px;
+  margin: 10px 0;
+}
+
+.iconify-icon-list > li > i {
+  font-size: 20px;
+}
+
+.iconify-icon-list > li > span {
+  font-size: 11px;
+  display: block;
+  text-align: center;
+}

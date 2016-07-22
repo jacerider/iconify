@@ -1,0 +1,26 @@
+<?php
+
+use \Drupal\iconify\Entity\Iconify;
+
+/**
+ * @file
+ * Install, update and uninstall functions for the iconify module.
+ */
+
+function iconify_install() {
+  try {
+    // Add Font-Awesome by default.
+    $iconify = Iconify::create([
+      'id' => 'font-awesome',
+      'label' => 'Font Awesome',
+    ]);
+    $path = drupal_realpath(dirname(__FILE__) . '/lib/font-awesome.zip');
+    $iconify->setZipPackage($path);
+    $iconify->save();
+    drupal_set_message(t('iconifyIcon Font Awesome icon package has been enabled by default.', ['iconifyIcon' => '<i class="fa-drupal"></i>']));
+  }
+  catch (Exception $e) {
+    drupal_set_message($e->getMessage(), 'error');
+    return;
+  }
+}
