@@ -45,10 +45,11 @@ class IconifyForm extends ContentEntityForm {
       '#default_value' => $this->entity->id(),
       '#disabled' => !$this->entity->isNew(),
       '#maxlength' => 64,
-      '#description' => $this->t('A unique name for this IcoMoon package. It must only contain lowercase letters, numbers and underscores.'),
+      '#description' => $this->t('A unique name for this IcoMoon package. It must only contain lowercase letters, numbers and hyphens.'),
       '#machine_name' => array(
         'source' => array('label'),
         'exists' => '\Drupal\iconify\Entity\Iconify::load',
+        'replace_pattern' => '[^a-z0-9-]+',
         'replace' => '-',
       ),
     );
