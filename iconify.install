@@ -14,8 +14,12 @@ function iconify_install() {
       'id' => 'font-awesome',
       'label' => 'Font Awesome',
     ]);
-    $path = drupal_realpath(dirname(__FILE__) . '/lib/font-awesome.zip');
-    $iconify->setZipPackage($path);
+    $path = dirname(__FILE__) . '/lib/font-awesome.zip';
+    $realpath = drupal_realpath($path);
+    if (!file_exists($path)) {
+      throw new Exception('The default Font Awesome package could not be found. Please make sure the package exists at ' . $path . ' and try to install again.');
+    }
+    $iconify->setZipPackage($realpath);
     $iconify->save();
     drupal_set_message(t('iconifyIcon Font Awesome icon package has been enabled by default.', ['iconifyIcon' => '<i class="fa-drupal"></i>']));
   }
