@@ -1,0 +1,9 @@
+# Example iconify_info plugin definitions.
+# Plugin property $defaults are defined in IconifyInfoManager.
+published:
+  text: published
+  icon: fa-circle
+  weight: -1
+unpublished:
+  regex: ^unpub
+  icon: fa-circle-o

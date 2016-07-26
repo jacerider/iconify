@@ -40,6 +40,9 @@ function template_preprocess_iconify(array &$variables) {
     '#theme' => 'iconify_icon_list',
     '#iconify' => $iconify,
   ];
+  if (!$iconify->isPublished()) {
+    $variables['content']['iconify_icons']['icons']['#attached']['library'][] = 'iconify/iconify.' . $iconify->id();
+  }
 }
 
 /**
@@ -59,13 +62,4 @@ function template_preprocess_iconify_icon_list(array &$variables) {
   $iconify = $variables['iconify']['#iconify'];
   $variables['content'] = [];
   $variables['icons'] = $iconify->getIcons();
-  // $items = [];
-  // foreach ($iconify->getIcons() as $name => $selector) {
-  //   $items[$name]['#markup'] = '<i class="'.$selector.'"></i><br>';
-  // }
-  // $variables['content'] = [];
-  // $variables['content']['list'] = array(
-  //   '#theme' => 'item_list',
-  //   '#items' => $items,
-  // );
 }

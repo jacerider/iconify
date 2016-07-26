@@ -66,9 +66,30 @@ function iconify_element_info_alter(array &$types) {
 function iconify_library_info_alter(&$libraries, $extension) {
   if ($extension === 'iconify') {
     foreach (iconify_get_active() as $icon_package) {
-      $libraries['iconify']['css']['theme'][$icon_package->getStylesheet()] = [];
+      $libraries['iconify']['dependencies'][] = 'iconify/iconify.' . $icon_package->id();
     }
   }
+}
+
+/**
+ * Implements hook_library_info_build().
+ */
+function iconify_library_info_build() {
+  $libraries = [];
+  foreach (iconify_get_all() as $icon_package) {
+    $libraries['iconify.' . $icon_package->id()]['css']['theme'][$icon_package->getStylesheet()] = [];
+  }
+  return $libraries;
+}
+
+/**
+ * Return all active Iconify packages.
+ *
+ * @return array
+ *   An array of entity objects indexed by their IDs.
+ */
+function iconify_get_all() {
+  return Iconify::loadAll();
 }
 
 /**

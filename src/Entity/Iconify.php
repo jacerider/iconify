@@ -211,6 +211,27 @@ class Iconify extends ContentEntityBase implements IconifyInterface {
    * @return static[]
    *   An array of entity objects indexed by their IDs.
    */
+  public static function loadAll() {
+    return Iconify::loadMultiple(Iconify::loadAllIds());
+  }
+
+  /**
+   * Load all active Iconify IDs.
+   *
+   * @return static[]
+   *   An array of entity IDs indexed by their IDs.
+   */
+  public static function loadAllIds() {
+    $query = \Drupal::entityQuery('iconify');
+    return $query->execute();
+  }
+
+  /**
+   * Load all active Iconify packages.
+   *
+   * @return static[]
+   *   An array of entity objects indexed by their IDs.
+   */
   public static function loadActive() {
     return Iconify::loadMultiple(Iconify::loadActiveIds());
   }
