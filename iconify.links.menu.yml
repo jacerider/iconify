@@ -1,13 +1,13 @@
 # Iconify package menu items definition
 entity.iconify.collection:
-  title: 'Iconify packages'
+  title: 'Iconify'
   route_name: entity.iconify.collection
   description: 'List Iconify package entities'
   parent: system.admin_config_media
   weight: 100
 
-iconify.admin.structure.settings:
-  title: Iconify package settings
-  description: 'Configure Iconify package entities'
-  route_name: iconify.settings
-  parent: system.admin_structure
+# iconify.admin.structure.settings:
+#   title: Iconify package settings
+#   description: 'Configure Iconify package entities'
+#   route_name: iconify.settings
+#   parent: system.admin_structure

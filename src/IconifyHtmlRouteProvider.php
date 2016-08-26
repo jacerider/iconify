@@ -34,9 +34,9 @@ class IconifyHtmlRouteProvider extends AdminHtmlRouteProvider {
       $collection->add("entity.{$entity_type_id}.add_form", $add_form_route);
     }
 
-    if ($settings_form_route = $this->getSettingsFormRoute($entity_type)) {
-      $collection->add("$entity_type_id.settings", $settings_form_route);
-    }
+    // if ($settings_form_route = $this->getSettingsFormRoute($entity_type)) {
+    //   $collection->add("$entity_type_id.settings", $settings_form_route);
+    // }
 
     return $collection;
   }
