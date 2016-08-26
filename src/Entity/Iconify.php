@@ -206,17 +206,17 @@ class Iconify extends ContentEntityBase implements IconifyInterface {
   }
 
   /**
-   * Load all active Iconify packages.
+   * Load all Iconify packages.
    *
    * @return static[]
    *   An array of entity objects indexed by their IDs.
    */
   public static function loadAll() {
-    return Iconify::loadMultiple(Iconify::loadAllIds());
+    return Iconify::loadMultiple();
   }
 
   /**
-   * Load all active Iconify IDs.
+   * Load all Iconify IDs.
    *
    * @return static[]
    *   An array of entity IDs indexed by their IDs.
