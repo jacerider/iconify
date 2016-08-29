@@ -14,34 +14,34 @@ use Drupal\Core\Render\Element;
  *
  * Default template: iconify.html.twig.
  *
- * @param array $variables
+ * @param array $vars
  *   An associative array containing:
  *   - elements: An associative array containing the user information and any
  *   - attributes: HTML attributes for the containing element.
  */
-function template_preprocess_iconify(array &$variables) {
+function template_preprocess_iconify(array &$vars) {
   // Fetch Iconify Entity Object.
-  $iconify = $variables['elements']['#iconify'];
+  $iconify = $vars['elements']['#iconify'];
 
   // Helpful $content variable for templates.
-  $variables['content'] = [];
-  foreach (Element::children($variables['elements']) as $key) {
-    $variables['content'][$key] = $variables['elements'][$key];
+  $vars['content'] = [];
+  foreach (Element::children($vars['elements']) as $key) {
+    $vars['content'][$key] = $vars['elements'][$key];
   }
 
   // Icons
-  $variables['content']['iconify_icons']['title'] = [
+  $vars['content']['iconify_icons']['title'] = [
     '#type' => 'html_tag',
     '#tag' => 'h2',
     '#value' => t('Available Icons'),
     '#suffix' => '<br><hr><br>',
   ];
-  $variables['content']['iconify_icons']['icons'] = [
+  $vars['content']['iconify_icons']['icons'] = [
     '#theme' => 'iconify_icon_list',
     '#iconify' => $iconify,
   ];
   if (!$iconify->isPublished()) {
-    $variables['content']['iconify_icons']['icons']['#attached']['library'][] = 'iconify/iconify.' . $iconify->id();
+    $vars['content']['iconify_icons']['icons']['#attached']['library'][] = 'iconify/iconify.' . $iconify->id();
   }
 }
 
@@ -50,16 +50,15 @@ function template_preprocess_iconify(array &$variables) {
  *
  * Default template: iconify-icon-list.html.twig.
  *
- * @param array $variables
+ * @param array $vars
  *   An associative array containing:
  *   - elements: An associative array containing the user information and any
  *   - attributes: HTML attributes for the containing element.
  */
-function template_preprocess_iconify_icon_list(array &$variables) {
+function template_preprocess_iconify_icon_list(array &$vars) {
   // Attach UI CSS.
-  $variables['#attached'] = ['library' => ['iconify/iconify.ui']];
+  $vars['#attached'] = ['library' => ['iconify/iconify.admin.ui']];
 
-  $iconify = $variables['iconify']['#iconify'];
-  $variables['content'] = [];
-  $variables['icons'] = $iconify->getIcons();
+  $iconify = $vars['iconify']['#iconify'];
+  $vars['icons'] = $iconify->getIcons();
 }

@@ -1,5 +1,6 @@
 entity.iconify.add_form:
-  route_name: entity.iconify.add_form
-  title: 'Add Iconify package'
+  route_name: 'entity.iconify.add_form'
+  title: 'Add Iconify'
   appears_on:
     - entity.iconify.collection
+

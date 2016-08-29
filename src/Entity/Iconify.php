@@ -1,47 +1,32 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\iconify\Entity\Iconify.
- */
-
 namespace Drupal\iconify\Entity;
 
+use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Entity\ContentEntityBase;
-use Drupal\Core\Entity\EntityChangedTrait;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\iconify\IconifyInterface;
-use Drupal\user\UserInterface;
+use Drupal\Core\Entity\EntityMalformedException;
 use Drupal\Component\Serialization\Json;
 
 /**
- * Defines the Iconify package entity.
+ * Defines the Iconify entity.
  *
- * @ingroup iconify
- *
- * @ContentEntityType(
+ * @ConfigEntityType(
  *   id = "iconify",
- *   label = @Translation("Iconify package"),
+ *   label = @Translation("Iconify"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\iconify\IconifyListBuilder",
- *     "views_data" = "Drupal\iconify\Entity\IconifyViewsData",
- *
  *     "form" = {
- *       "default" = "Drupal\iconify\Form\IconifyForm",
  *       "add" = "Drupal\iconify\Form\IconifyForm",
  *       "edit" = "Drupal\iconify\Form\IconifyForm",
- *       "delete" = "Drupal\iconify\Form\IconifyDeleteForm",
+ *       "delete" = "Drupal\iconify\Form\IconifyDeleteForm"
  *     },
- *     "access" = "Drupal\iconify\IconifyAccessControlHandler",
  *     "route_provider" = {
  *       "html" = "Drupal\iconify\IconifyHtmlRouteProvider",
  *     },
  *   },
- *   base_table = "iconify",
- *   admin_permission = "administer iconify package entities",
+ *   config_prefix = "iconify",
+ *   admin_permission = "administer site configuration",
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",
@@ -49,89 +34,83 @@ use Drupal\Component\Serialization\Json;
  *     "status" = "status",
  *   },
  *   links = {
- *     "canonical" = "/admin/config/media/iconify/{iconify}",
- *     "add-form" = "/admin/config/media/iconify/add",
- *     "edit-form" = "/admin/config/media/iconify/{iconify}/edit",
- *     "delete-form" = "/admin/config/media/iconify/{iconify}/delete",
- *     "collection" = "/admin/config/media/iconify",
+ *     "canonical" = "/admin/structure/iconify/{iconify}",
+ *     "add-form" = "/admin/structure/iconify/add",
+ *     "edit-form" = "/admin/structure/iconify/{iconify}/edit",
+ *     "delete-form" = "/admin/structure/iconify/{iconify}/delete",
+ *     "collection" = "/admin/structure/iconify"
  *   }
  * )
  */
-class Iconify extends ContentEntityBase implements IconifyInterface {
-  use EntityChangedTrait;
+class Iconify extends ConfigEntityBase implements IconifyInterface {
 
+  /**
+   * The Iconify ID.
+   *
+   * @var string
+   */
+  protected $id;
+
+  /**
+   * The Iconify label.
+   *
+   * @var string
+   */
+  protected $label;
+
+  /**
+   * The info of this package.
+   *
+   * @var array
+   */
+  protected $info = [];
+
+  /**
+   * The available icons in this package.
+   *
+   * @var array
+   */
+  protected $icons = [];
+
+  /**
+   * The folder where Iconifys exist.
+   */
   protected $directory = 'public://iconify';
-  protected $info = NULL;
-  protected $icons = NULL;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
-    parent::preCreate($storage_controller, $values);
-    $values += array(
-      'user_id' => \Drupal::currentUser()->id(),
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function preDelete(EntityStorageInterface $storage, array $entities) {
-    parent::preDelete($storage, $entities);
-    foreach ($entities as $entity) {
-      $directory = 'public://iconify/' . $entity->id();
-      file_unmanaged_delete_recursive($directory);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getLabel() {
-    return $this->get('label')->value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setLabel($label) {
-    $this->set('label', $label);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCreatedTime() {
-    return $this->get('created')->value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setCreatedTime($timestamp) {
-    $this->set('created', $timestamp);
-    return $this;
-  }
 
   /**
    * {@inheritdoc}
    */
   public function isPublished() {
-    return (bool) $this->getEntityKey('status');
+    return (bool) $this->get('status');
   }
 
   /**
    * {@inheritdoc}
    */
   public function setPublished($published) {
-    $this->set('status', $published ? NODE_PUBLISHED : NODE_NOT_PUBLISHED);
+    $this->set('status', $published ? 1 : 0);
     return $this;
   }
 
   /**
-   * Return the location where Iconify packages exist.
+   * Set the archive as base64 encoded string.
+   */
+  public function setArchive($zip_path) {
+    $data = strtr(base64_encode(addslashes(gzcompress(serialize(file_get_contents($zip_path)),9))), '+/=', '-_,');
+    $parts = str_split($data, 200000);
+    $this->set('archive', $parts);
+  }
+
+  /**
+   * Get the archive from base64 encoded string.
+   */
+  public function getArchive() {
+    $data = implode('', $this->get('archive'));
+    return unserialize(gzuncompress(stripslashes(base64_decode(strtr($data, '-_,', '+/=')))));
+  }
+
+  /**
+   * Return the location where Iconifys exist.
    *
    * @return [string]
    */
@@ -155,7 +134,7 @@ class Iconify extends ContentEntityBase implements IconifyInterface {
    * @return [array]
    */
   public function getInfo() {
-    if (is_null($this->info)) {
+    if (empty($this->info)) {
       $this->info = [];
       $path = $this->getDirectory() . '/selection.json';
       if (file_exists($path)) {
@@ -170,7 +149,7 @@ class Iconify extends ContentEntityBase implements IconifyInterface {
    * Get IcoMoon package icons.
    */
   public function getIcons() {
-    if (is_null($this->icons) && $info = $this->getInfo()) {
+    if (empty($this->icons) && $info = $this->getInfo()) {
       $this->icons = array();
       $prefix = $info['preferences']['fontPref']['prefix'];
       foreach ($info['icons'] as $icon) {
@@ -183,30 +162,7 @@ class Iconify extends ContentEntityBase implements IconifyInterface {
   }
 
   /**
-   * Properly extract and store an IcoMoon zip file.
-   *
-   * @param [string] $zip_path
-   *   The absolute path to the zip file.
-   */
-  public function setZipPackage($zip_path) {
-    $archiver = archiver_get_archiver($zip_path);
-    if (!$archiver) {
-      throw new Exception(t('Cannot extract %file, not a valid archive.', array('%file' => $file)));
-    }
-
-    $directory = $this->getDirectory();
-    file_unmanaged_delete_recursive($directory);
-    file_prepare_directory($directory, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
-    $archiver->extract($directory);
-
-    // Clean up
-    file_unmanaged_delete_recursive($directory . '/demo-files');
-    file_unmanaged_delete($directory . '/demo.html');
-    file_unmanaged_delete($directory . '/Read Me.txt');
-  }
-
-  /**
-   * Load all Iconify packages.
+   * Load all active Iconify packages.
    *
    * @return static[]
    *   An array of entity objects indexed by their IDs.
@@ -227,7 +183,7 @@ class Iconify extends ContentEntityBase implements IconifyInterface {
   }
 
   /**
-   * Load all active Iconify packages.
+   * Load all Iconify packages.
    *
    * @return static[]
    *   An array of entity objects indexed by their IDs.
@@ -250,53 +206,66 @@ class Iconify extends ContentEntityBase implements IconifyInterface {
   /**
    * {@inheritdoc}
    */
-  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+  public function preSave(EntityStorageInterface $storage) {
+    parent::preSave($storage);
 
-    $fields['id'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('ID'))
-      ->setDescription(t('The ID of the Iconify package entity.'))
-      ->setRequired(TRUE)
-      ->setSettings(array(
-        'max_length' => 64,
-        'text_processing' => 0,
-      ))
-      ->addConstraint('UniqueField', []);
+    if (!$this->isNew()) {
+      $original = $storage->loadUnchanged($this->getOriginalId());
+    }
 
-    $fields['label'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Label'))
-      ->setDescription(t('The label of this Iconify package.'))
-      ->setRequired(TRUE)
-      ->setSettings(array(
-        'max_length' => 255,
-        'text_processing' => 0,
-      ))
-      ->setDefaultValue('')
-      ->setDisplayOptions('view', array(
-        'label' => 'hidden',
-        'type' => 'string',
-        'weight' => -4,
-      ))
-      ->setDisplayConfigurable('view', TRUE);
+    if (!$this->get('archive')) {
+      throw new EntityMalformedException('IcoMoon icon package is required.');
+    }
+    if ($this->isNew() || $original->get('archive') !== $this->get('archive')) {
+      $this->archiveDecode();
+    }
+  }
 
-    $fields['uuid'] = BaseFieldDefinition::create('uuid')
-      ->setLabel(t('UUID'))
-      ->setDescription(t('The UUID of the Iconify package entity.'))
-      ->setReadOnly(TRUE);
+  /**
+   * {@inheritdoc}
+   */
+  public static function preDelete(EntityStorageInterface $storage, array $entities) {
+    parent::preDelete($storage, $entities);
+    foreach ($entities as $entity) {
+      file_unmanaged_delete_recursive($entity->getDirectory());
+      // Clean up empty directory. Will fail silently if it is not empty.
+      @rmdir($entity->directory);
+    }
+  }
 
-    $fields['status'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Publishing status'))
-      ->setDescription(t('A boolean indicating whether the Iconify package is published.'))
-      ->setDefaultValue(TRUE);
+  /**
+   * Take base64 encoded archive and save it to a temporary file for extraction.
+   */
+  protected function archiveDecode() {
+    $data = $this->getArchive();
+    $zip_path = 'temporary://' . $this->id() . '.zip';
+    file_put_contents($zip_path, $data);
+    $this->archiveExtract($zip_path);
+  }
 
-    $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Created'))
-      ->setDescription(t('The time that the entity was created.'));
+  /**
+   * Properly extract and store an IcoMoon zip file.
+   *
+   * @param [string] $zip_path
+   *   The absolute path to the zip file.
+   */
+  public function archiveExtract($zip_path) {
+    $archiver = archiver_get_archiver($zip_path);
+    if (!$archiver) {
+      throw new Exception(t('Cannot extract %file, not a valid archive.', array('%file' => $zip_path)));
+    }
 
-    $fields['changed'] = BaseFieldDefinition::create('changed')
-      ->setLabel(t('Changed'))
-      ->setDescription(t('The time that the entity was last edited.'));
+    $directory = $this->getDirectory();
+    file_unmanaged_delete_recursive($directory);
+    file_prepare_directory($directory, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
+    $archiver->extract($directory);
 
-    return $fields;
+    // Clean up
+    file_unmanaged_delete_recursive($directory . '/demo-files');
+    file_unmanaged_delete($directory . '/demo.html');
+    file_unmanaged_delete($directory . '/Read Me.txt');
+
+    drupal_set_message(t('iconifyIcon %name package has been successfully %op.', ['iconifyIcon' => '<i class="fa-drupal"></i>', '%name' => $this->label(), '%op' => ($this->isNew() ? t('added') : t('updated'))]));
   }
 
 }

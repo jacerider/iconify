@@ -9,9 +9,9 @@ namespace Drupal\iconify;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
-use Drupal\Core\Routing\LinkGeneratorTrait;
 use Drupal\Core\Url;
-use Drupal\iconify\Iconify;
+use Drupal\Core\Routing\LinkGeneratorTrait;
+use Drupal\iconify\IconifyIconizeTrait;
 
 /**
  * Defines a class to build a listing of Iconify package entities.
@@ -20,14 +20,20 @@ use Drupal\iconify\Iconify;
  */
 class IconifyListBuilder extends EntityListBuilder {
   use LinkGeneratorTrait;
+  use IconifyIconizeTrait;
+
   /**
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['label'] = $this->t('Label');
-    $header['id'] = $this->t('ID');
-    $header['status'] = $this->t('Published');
-    return $header + parent::buildHeader();
+    $header['label'] = $this->iconify('Label');
+    $header['id'] = $this->iconify('ID');
+    $header['status'] = $this->iconify('Status');
+    $header = $header + parent::buildHeader();
+    if (isset($header['operations'])) {
+      $header['operations'] = $this->iconify($header['operations']);
+    }
+    return $header;
   }
 
   /**
@@ -45,7 +51,7 @@ class IconifyListBuilder extends EntityListBuilder {
     );
     $row['id'] = $entity->id();
     $status = $entity->isPublished() ? $this->t('Published') : $this->t('Unpublished');
-    $row['status'] = Iconify::fromText($status)->setIconOnly();
+    $row['status'] = $this->iconify($status)->setIconOnly();
     return $row + parent::buildRow($entity);
   }
 

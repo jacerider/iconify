@@ -1,5 +1,17 @@
-# Example iconify_info plugin definitions.
+# Base iconify_info plugin definitions.
 # Plugin property $defaults are defined in IconifyInfoManager.
+label:
+  text: label
+  icon: fa-tag
+status:
+  text: status
+  icon: fa-adjust
+id:
+  text: id
+  icon: fa-qrcode
+operations:
+  text: operations
+  icon: fa-cog
 published:
   text: published
   icon: fa-circle

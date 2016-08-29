@@ -1,49 +1,38 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\iconify\Form\IconifyForm.
- */
-
 namespace Drupal\iconify\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
+use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Form controller for Iconify package edit forms.
+ * Class IconifyForm.
  *
- * @ingroup iconify
+ * @package Drupal\iconify\Form
  */
-class IconifyForm extends ContentEntityForm {
-
-  /**
-   * Uploaded file entity.
-   *
-   * @var \Drupal\file\Entity\File
-   */
-  protected $file;
+class IconifyForm extends EntityForm {
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
-    /* @var $entity \Drupal\iconify\Entity\Iconify */
-    $form = parent::buildForm($form, $form_state);
-    $entity = $this->entity;
+  public function form(array $form, FormStateInterface $form_state) {
+    $form = parent::form($form, $form_state);
+
+    $iconify = $this->entity;
 
     $form['label'] = array(
       '#type' => 'textfield',
-      '#title' => '<i class="fa-user"></i> ' . $this->t('Label'),
-      '#default_value' => $this->entity->label(),
+      '#title' => $this->t('Label'),
+      '#default_value' => $iconify->label(),
       '#maxlength' => 255,
       '#description' => $this->t('A unique label for this IcoMoon package. This label will be displayed in the interface of modules that integrate with Iconify.'),
+      '#required' => TRUE,
     );
 
     $form['id'] = array(
       '#type' => 'machine_name',
-      '#default_value' => $this->entity->id(),
-      '#disabled' => !$this->entity->isNew(),
+      '#default_value' => $iconify->id(),
+      '#disabled' => !$iconify->isNew(),
       '#maxlength' => 64,
       '#description' => $this->t('A unique name for this IcoMoon package. It must only contain lowercase letters, numbers and hyphens.'),
       '#machine_name' => array(
@@ -60,7 +49,7 @@ class IconifyForm extends ContentEntityForm {
     );
     $form['file'] = array(
       '#type' => 'file',
-      '#title' => $this->entity->isNew() ? $this->t('IcoMoon Font Package') : $this->t('Replace IcoMoon Font Package'),
+      '#title' => $iconify->isNew() ? $this->t('IcoMoon Font Package') : $this->t('Replace IcoMoon Font Package'),
       '#description' => array(
         '#theme' => 'file_upload_help',
         '#description' => $this->t('An IcoMoon font package.'),
@@ -167,12 +156,12 @@ class IconifyForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    $entity = $this->entity;
+    $iconify = $this->entity;
 
     if ($this->file) {
       try {
         $zip_path = $this->file->getFileUri();
-        $entity->setZipPackage($zip_path);
+        $iconify->setArchive($zip_path);
       }
       catch (Exception $e) {
         $form_state->setErrorByName('file', $e->getMessage());
@@ -180,22 +169,22 @@ class IconifyForm extends ContentEntityForm {
       }
     }
 
-    $status = parent::save($form, $form_state);
+    $status = $iconify->save();
 
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t('Created the %label Iconify package.', [
-          '%label' => $entity->label(),
+        drupal_set_message($this->t('Created the %label Iconify.', [
+          '%label' => $iconify->label(),
         ]));
         break;
 
       default:
-        drupal_set_message($this->t('Saved the %label Iconify package.', [
-          '%label' => $entity->label(),
+        drupal_set_message($this->t('Saved the %label Iconify.', [
+          '%label' => $iconify->label(),
         ]));
     }
     drupal_flush_all_caches();
-    $form_state->setRedirect('entity.iconify.canonical', ['iconify' => $entity->id()]);
+    $form_state->setRedirectUrl($iconify->urlInfo('collection'));
   }
 
 }

@@ -1,0 +1,18 @@
+iconify.iconify.*:
+  type: config_entity
+  label: 'Iconify config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+    status:
+      type: boolean
+      label: 'Status'
+    archive:
+      type: sequence
+      label: 'Archive'

@@ -2,7 +2,7 @@ iconify:
   version: VERSION
   css:
     theme: []
-iconify.ui:
+iconify.admin.ui:
   version: VERSION
   css:
     component:

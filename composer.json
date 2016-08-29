@@ -1,0 +1,14 @@
+{
+  "name": "drupal/iconify",
+  "type": "drupal-module",
+  "description": "IcoMoon icon manager.",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/iconify",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/iconify",
+    "source": "http://cgit.drupalcode.org/iconify"
+  },
+  "require": { }
+}

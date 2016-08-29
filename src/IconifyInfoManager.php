@@ -10,12 +10,12 @@ use Drupal\Core\Plugin\Discovery\ContainerDerivativeDiscoveryDecorator;
 use Drupal\Core\Plugin\Discovery\YamlDiscovery;
 
 /**
- * Provides the default iconify_info manager.
+ * Provides the default iconify.info manager.
  */
 class IconifyInfoManager extends DefaultPluginManager implements IconifyInfoManagerInterface {
 
   /**
-   * Provides default values for all iconify_info plugins.
+   * Provides default values for all iconify.info plugins.
    *
    * @var array
    */
@@ -37,7 +37,7 @@ class IconifyInfoManager extends DefaultPluginManager implements IconifyInfoMana
   public function __construct(ModuleHandlerInterface $module_handler, CacheBackendInterface $cache_backend) {
     // Add more services as required.
     $this->moduleHandler = $module_handler;
-    $this->setCacheBackend($cache_backend, 'iconify_info', array('iconify_info'));
+    $this->setCacheBackend($cache_backend, 'iconify.info', array('iconify.info'));
   }
 
   /**

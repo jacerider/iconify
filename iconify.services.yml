@@ -2,3 +2,4 @@ services:
   plugin.manager.iconify.info:
     class: Drupal\iconify\IconifyInfoManager
     arguments: ['@module_handler', '@cache.discovery']
+
