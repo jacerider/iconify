@@ -265,6 +265,14 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
     file_unmanaged_delete($directory . '/demo.html');
     file_unmanaged_delete($directory . '/Read Me.txt');
 
+    // The style.css file provided by IcoMoon contains query parameters where it
+    // loads in the font files. Drupal CSS aggregation doesn't handle this will
+    // so we need to remove it.
+    $file_path = $directory . '/style.css';
+    $file_contents = file_get_contents($file_path);
+    $file_contents = preg_replace('(\?[a-zA-Z0-9#\-\_]*)', '', $file_contents);
+    file_put_contents($file_path, $file_contents);
+
     drupal_set_message(t('iconifyIcon %name package has been successfully %op.', ['iconifyIcon' => '<i class="fa-drupal"></i>', '%name' => $this->label(), '%op' => ($this->isNew() ? t('added') : t('updated'))]));
   }
 
