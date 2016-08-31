@@ -137,7 +137,7 @@ class IconifyIconize extends TranslatableMarkup {
     $output = parent::render();
     if ($icon = $this->getIconMarkup()) {
       if ($this->options['iconOnly']) {
-        $output = $icon;
+        $output = $icon . '<span class="visually-hidden">' . $output . '</span>';
       }
       else {
         if ($this->options['iconPosition'] == 'after') {
