@@ -13,9 +13,21 @@ operations:
   text: operations
   icon: fa-cog
 published:
-  text: published
+  regex: ^publish
   icon: fa-circle
   weight: -1
 unpublished:
-  regex: ^unpub
+  regex: ^unpublish
   icon: fa-circle-o
+view:
+  regex: ^view
+  icon: fa-eye
+edit:
+  regex: ^edit
+  icon: fa-edit
+delete:
+  regex: ^delete
+  icon: fa-trash
+devel:
+  regex: ^devel
+  icon: fa-code
