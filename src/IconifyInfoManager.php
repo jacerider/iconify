@@ -64,6 +64,4 @@ class IconifyInfoManager extends DefaultPluginManager implements IconifyInfoMana
     }
   }
 
-  // Add other methods here as defined in the IconifyInfoManagerInterface.
-
 }
