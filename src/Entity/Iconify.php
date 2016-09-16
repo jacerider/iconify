@@ -73,6 +73,13 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
   protected $icons = [];
 
   /**
+   * The available icons in this package.
+   *
+   * @var array
+   */
+  protected $iconsWithHex = [];
+
+  /**
    * The folder where Iconifys exist.
    */
   protected $directory = 'public://iconify';
@@ -146,7 +153,7 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
   }
 
   /**
-   * Get IcoMoon package icons.
+   * Get IcoMoon package icons with tag as key.
    */
   public function getIcons() {
     if (empty($this->icons) && $info = $this->getInfo()) {
@@ -159,6 +166,26 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
       }
     }
     return $this->icons;
+  }
+
+  /**
+   * Get IcoMoon package icons with hex as key.
+   */
+  public function getIconsWithHex() {
+    if (empty($this->iconsWithHex) && $info = $this->getInfo()) {
+      $this->icons = array();
+      $prefix = $info['preferences']['fontPref']['prefix'];
+      foreach ($info['icons'] as $icon) {
+        foreach ($icon['icon']['tags'] as $tag) {
+          $this->iconsWithHex[$tag] = [
+            'selector' => $prefix . $tag,
+            'hex' => '\\' . dechex($icon['properties']['code']),
+            'code' => $icon['properties']['code'],
+          ];
+        }
+      }
+    }
+    return $this->iconsWithHex;
   }
 
   /**
