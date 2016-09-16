@@ -1,0 +1,15 @@
+{% if icon and position=="before" %}
+  <i class="{{ icon }}"></i>
+{% endif %}
+{% if text %}
+  {% if icon_only %}
+    <span class="visually-hidden">
+  {% endif %}
+    {{ text }}
+  {% if icon_only %}
+    </span>
+  {% endif %}
+{% endif %}
+{% if icon and position=="after" %}
+  <i class="{{ icon }}"></i>
+{% endif %}

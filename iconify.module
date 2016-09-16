@@ -33,12 +33,16 @@ function iconify_theme($existing, $type, $theme, $path) {
   $themes['iconify'] = array(
     'render element' => 'elements',
     'file' => 'iconify.page.inc',
-    'template' => 'iconify',
+    // 'template' => 'iconify',
   );
   $themes['iconify_icon_list'] = array(
     'render element' => 'iconify',
     'file' => 'iconify.page.inc',
-    'template' => 'iconify-icon-list',
+    // 'template' => 'iconify-icon-list',
+  );
+  $themes['iconify_icon'] = array(
+    'file' => 'iconify.page.inc',
+    'variables' => ['text' => NULL, 'icon' => NULL, 'position' => 'before', 'icon_only' => FALSE],
   );
   return $themes;
 }
@@ -86,7 +90,7 @@ function iconify($string, array $args = array(), array $options = array()) {
 }
 
 /**
- * Return all active Iconifys.
+ * Return all active Iconify entities.
  *
  * @return array
  *   An array of entity objects indexed by their IDs.
@@ -96,7 +100,7 @@ function iconify_load_all() {
 }
 
 /**
- * Return all active Iconifys.
+ * Return all active Iconify entities.
  *
  * @return array
  *   An array of entity objects indexed by their IDs.
@@ -106,7 +110,7 @@ function iconify_load_active() {
 }
 
 /**
- * [iconify_load description]
+ * Load a specific iconify entity.
  *
  * @param [string] $id
  *   The machine name of the Iconify.
@@ -117,3 +121,5 @@ function iconify_load_active() {
 function iconify_load($id) {
   return Iconify::load($id);
 }
+
+
