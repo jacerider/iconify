@@ -8,7 +8,7 @@
   list-style-type: none;
   display: inline-block;
   width: 200px;
-  margin: 10px 0;
+  margin: 20px 0 0;
 }
 
 .iconify-icon-list > li > i {
@@ -19,4 +19,23 @@
   font-size: 11px;
   display: block;
   text-align: center;
+}
+
+.iconify-icon-list input {
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin: 0 4px;
+  box-sizing: border-box;
+}
+
+.iconify-icon-list input.hex {
+  font-size: 9px;
+  line-height: 9px;
+  margin-top: -1px;
+}
+
+.iconify-use {
+  width: 100%;
+  box-sizing: border-box;
 }
