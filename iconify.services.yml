@@ -3,3 +3,7 @@ services:
     class: Drupal\iconify\IconifyInfoManager
     arguments: ['@module_handler', '@cache.discovery']
 
+  iconify.manager:
+    class: Drupal\iconify\IconifyManager
+    arguments: ["@entity.manager", "@cache.discovery"]
+
