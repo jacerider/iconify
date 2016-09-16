@@ -135,18 +135,15 @@ class IconifyIconize extends TranslatableMarkup {
   public function render() {
     $icon = $this->getIconMarkup();
     $output = parent::render();
-    if ($icon = $this->getIconMarkup()) {
-      if ($this->options['iconOnly']) {
-        $output = $icon . '<span class="visually-hidden">' . $output . '</span>';
-      }
-      else {
-        if ($this->options['iconPosition'] == 'after') {
-          $output = $output . ' ' . $icon;
-        }
-        else {
-          $output = $icon . ' ' . $output;
-        }
-      }
+    if ($icon = $this->getIcon()) {
+      $output = [
+        '#theme' => 'iconify_icon',
+        '#icon' => $icon,
+        '#text' => $output,
+        '#icon_only' => $this->options['iconOnly'],
+        '#position' => $this->options['iconPosition'],
+      ];
+      $output = drupal_render($output);
     }
     return $output;
   }
