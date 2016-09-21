@@ -23,18 +23,11 @@ class IconifyManager implements IconifyManagerInterface {
   protected $entityManager;
 
   /**
-   * Drupal\Core\Cache\ChainedFastBackend definition.
-   *
-   * @var \Drupal\Core\Cache\ChainedFastBackend
-   */
-  protected $cacheDiscovery;
-
-  /**
-   * Cached definitions array.
+   * Cached packages array.
    *
    * @var array
    */
-  protected $definitions;
+  protected $packages;
 
   /**
    * Constructor.
@@ -47,7 +40,7 @@ class IconifyManager implements IconifyManagerInterface {
   /**
    * Initialize the cache backend.
    *
-   * Plugin definitions are cached using the provided cache backend. The
+   * Plugin packages are cached using the provided cache backend. The
    * interface language is added as a suffix to the cache key.
    *
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
@@ -56,13 +49,13 @@ class IconifyManager implements IconifyManagerInterface {
    *   Cache key prefix to use, the language code will be appended
    *   automatically.
    * @param array $cache_tags
-   *   (optional) When providing a list of cache tags, the cached plugin
-   *   definitions are tagged with the provided cache tags. These cache tags can
-   *   then be used to clear the corresponding cached plugin definitions. Note
-   *   that this should be used with care! For clearing all cached plugin
-   *   definitions of a plugin manager, call that plugin manager's
-   *   clearCachedDefinitions() method. Only use cache tags when cached plugin
-   *   definitions should be cleared along with other, related cache entries.
+   *   (optional) When providing a list of cache tags, the cached Iconify
+   *   packages are tagged with the provided cache tags. These cache tags can
+   *   then be used to clear the corresponding cached Iconify packages. Note
+   *   that this should be used with care! For clearing all cached Iconify
+   *   packages of a Iconify manager, call that Iconify manager's
+   *   clearCachedDefinitions() method. Only use cache tags when cached Iconify
+   *   packages should be cleared along with other, related cache entries.
    */
   public function setCacheBackend(CacheBackendInterface $cache_backend, $cache_key, array $cache_tags = array()) {
     assert('\Drupal\Component\Assertion\Inspector::assertAllStrings($cache_tags)', 'Cache Tags must be strings.');
@@ -74,75 +67,98 @@ class IconifyManager implements IconifyManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getDefinitions() {
-    $definitions = $this->getCachedDefinitions();
-    if (!isset($definitions)) {
-      $definitions = $this->findDefinitions();
-      $this->setCachedDefinitions($definitions);
+  public function getPackages() {
+    $packages = $this->getCachedDefinitions();
+    if (!isset($packages)) {
+      $packages = $this->loadPackages();
+      $this->setCachedPackages($packages);
     }
-    return $definitions;
+    return $packages;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getActivePackages() {
+    return array_filter($this->getPackages(), function($package) {
+      return $package['status'] == 1;
+    });
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getActivePackageLabels() {
+    return array_map(function($package){
+      return $package['label'];
+    }, $this->getActivePackages());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getGroupedIcons() {
     $icons = [];
-    foreach ($this->getDefinitions() as $iconify) {
+    foreach ($this->getPackages() as $iconify) {
       $icons[$iconify['id']] = $iconify['icons'];
     }
     return $icons;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getMergedIcons() {
     $icons = [];
-    foreach ($this->getDefinitions() as $iconify) {
+    foreach ($this->getPackages() as $iconify) {
       $icons = array_merge($icons, array_values($iconify['icons']));
     }
     return $icons;
   }
 
   /**
-   * Returns the cached plugin definitions of the decorated discovery class.
+   * Returns the cached Iconify packages.
    *
    * @return array|null
-   *   On success this will return an array of plugin definitions. On failure
+   *   On success this will return an array of Iconify packages. On failure
    *   this should return NULL, indicating to other methods that this has not
    *   yet been defined. Success with no values should return as an empty array
-   *   and would actually be returned by the getDefinitions() method.
+   *   and would actually be returned by the getPackages() method.
    */
   protected function getCachedDefinitions() {
-    if (!isset($this->definitions) && $cache = $this->cacheGet($this->cacheKey)) {
-      $this->definitions = $cache->data;
+    if (!isset($this->packages) && $cache = $this->cacheGet($this->cacheKey)) {
+      $this->packages = $cache->data;
     }
-    return $this->definitions;
+    return $this->packages;
   }
 
   /**
-   * Sets a cache of plugin definitions for the decorated discovery class.
+   * Sets a cache of Iconify packages.
    *
-   * @param array $definitions
-   *   List of definitions to store in cache.
+   * @param array $packages
+   *   List of packages to store in cache.
    */
-  protected function setCachedDefinitions($definitions) {
-    $this->cacheSet($this->cacheKey, $definitions, Cache::PERMANENT, $this->cacheTags);
-    $this->definitions = $definitions;
+  protected function setCachedPackages($packages) {
+    $this->cacheSet($this->cacheKey, $packages, Cache::PERMANENT, $this->cacheTags);
+    $this->packages = $packages;
   }
 
   /**
-   * Finds plugin definitions.
+   * Load iconify packages..
    *
    * @return array
-   *   List of definitions to store in cache.
+   *   List of packages to store in cache.
    */
-  protected function findDefinitions() {
+  protected function loadPackages() {
     $definitions = [];
     $storage = $this->entityManager->getStorage('iconify');
     foreach ($storage->loadMultiple() as $iconify) {
-      if ($iconify->isPublished()) {
-        $definitions[$iconify->id()] = [
-          'id' => $iconify->id(),
-          'label' => $iconify->label(),
-          'icons' => $iconify->getIcons(),
-        ];
-      }
+      $definitions[$iconify->id()] = [
+        'id' => $iconify->id(),
+        'label' => $iconify->label(),
+        'icons' => $iconify->getIcons(),
+        'status' => $iconify->isPublished(),
+      ];
     }
     return $definitions;
   }

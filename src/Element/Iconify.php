@@ -59,6 +59,8 @@ class Iconify extends FormElement {
       ),
       '#theme' => 'select',
       '#theme_wrappers' => array('form_element'),
+      '#multiple' => FALSE,
+      '#packages' => [],
     );
   }
 
@@ -132,10 +134,18 @@ class Iconify extends FormElement {
     }
 
     // Add icon packages as options.
-    $iconifyDefinitions = \Drupal::service('iconify.manager')->getDefinitions();
-    foreach ($iconifyDefinitions as $id => $data) {
+    $packages = \Drupal::service('iconify.manager')->getActivePackages();
+    $include = array_filter($element['#packages']);
+    if (!empty($include)) {
+      $packages = array_intersect_key($packages, $include);
+    }
+    foreach ($packages as $id => $data) {
       foreach ($data['icons'] as $class) {
-        $element['#options'][$data['label']][$class] = $class;
+        if (count($packages) > 1) {
+          $element['#options'][$data['label']][$class] = $class;
+        } else {
+          $element['#options'][$class] = $class;
+        }
       }
     }
 
