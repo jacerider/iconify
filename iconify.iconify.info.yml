@@ -28,6 +28,9 @@ edit:
 delete:
   regex: ^delete
   icon: fa-trash
+revision:
+  regex: ^revision
+  icon: fa-undo
 devel:
   regex: ^devel
   icon: fa-code
