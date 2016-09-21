@@ -1,14 +1,20 @@
 {
-  "name": "drupal/iconify",
+  "name": "jacerider/iconify",
+  "description": "An IcoMoon-based icon manager for Drupal.",
   "type": "drupal-module",
-  "description": "IcoMoon icon manager.",
-  "keywords": ["Drupal"],
   "license": "GPL-2.0+",
-  "homepage": "https://www.drupal.org/project/iconify",
-  "minimum-stability": "dev",
+  "homepage": "https://github.com/jacerider/iconify",
+  "authors": [
+    {
+      "name": "Cyle Carlson (JaceRider)",
+      "email": "jacerider@gmail.com",
+      "role": "Maintainer"
+    }
+  ],
   "support": {
-    "issues": "https://www.drupal.org/project/issues/iconify",
-    "source": "http://cgit.drupalcode.org/iconify"
+    "issues": "https://github.com/jacerider/iconify/issues",
+    "source": "https://github.com/jacerider/iconify"
   },
+  "minimum-stability": "dev",
   "require": { }
 }
