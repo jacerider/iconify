@@ -1,5 +1,5 @@
 name: Iconify
 description: 'An IcoMoon-based icon manager for Drupal.'
-package: JaceRider
+package: Iconify
 type: module
 core: 8.x

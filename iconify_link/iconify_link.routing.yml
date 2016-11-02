@@ -1,0 +1,11 @@
+
+iconify_link.iconify_link_config_form:
+  path: '/admin/structure/iconify/link'
+  defaults:
+    _form: '\Drupal\iconify_link\Form\IconifyLinkConfigForm'
+    _title: 'IconifyLinkConfigForm'
+  requirements:
+    _permission: 'administer iconify link'
+  options:
+    _admin_route: TRUE
+

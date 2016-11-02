@@ -1,0 +1,4 @@
+iconify.link.config:
+  route_name: iconify_link.iconify_link_config_form
+  base_route: entity.iconify.collection
+  title: 'Link Settings'

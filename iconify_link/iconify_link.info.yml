@@ -1,0 +1,10 @@
+name: Iconify Link
+type: module
+description: Provides a widget to allow settings of link icons for menu links.
+core: 8.x
+package: Iconify
+dependencies:
+  - link
+  - menu_link_content
+  - menu_ui
+  - iconify
