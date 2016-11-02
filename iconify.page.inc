@@ -8,6 +8,7 @@
  */
 
 use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Markup;
 
 /**
  * Prepares variables for Iconify package templates.
@@ -70,6 +71,26 @@ line-height: 1;
 }
 
 /**
+ * Prepare variables for the Iconify icon template.
+ *
+ * Default template: iconify-icon.html.twig.
+ *
+ * @param array $vars
+ *   An associative array containing:
+ *   - elements: An associative array containing the user information and any
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_iconify_icon(&$vars) {
+  $children = '';
+  if (!empty($vars['children_count']) && intval($vars['children_count']) > 1) {
+    for ($i = 1; $i <= intval($vars['children_count']); $i++) {
+      $children .= '<span class="path'.$i.'"></span>';
+    }
+  }
+  $vars['children'] = Markup::create($children);
+}
+
+/**
  * Prepares variables for the Iconify icon list template.
  *
  * Default template: iconify-icon-list.html.twig.
@@ -83,5 +104,12 @@ function template_preprocess_iconify_icon_list(array &$vars) {
   // Attach UI CSS.
   $vars['#attached'] = ['library' => ['iconify/iconify.admin.ui']];
   $iconify = $vars['iconify']['#iconify'];
-  $vars['icons'] = $iconify->getIconsWithHex();
+  $vars['icons'] = $iconify->getIconsWithInfo();
+  foreach ($vars['icons'] as &$icon) {
+    $icon['render'] = [
+      '#theme' => 'iconify_icon',
+      '#icon' => $icon['selector'],
+      '#children_count' => count($icon['code']),
+    ];
+  }
 }

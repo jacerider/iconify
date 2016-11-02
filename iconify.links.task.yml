@@ -1,0 +1,4 @@
+iconify.packages:
+  route_name: entity.iconify.collection
+  base_route: entity.iconify.collection
+  title: 'Packages'

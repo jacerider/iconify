@@ -100,7 +100,9 @@ class IconifyManager implements IconifyManagerInterface {
   public function getGroupedIcons() {
     $icons = [];
     foreach ($this->getPackages() as $iconify) {
-      $icons[$iconify['id']] = $iconify['icons'];
+      foreach ($iconify['icons'] as $tag => $info) {
+        $icons[$iconify['id']][] = $info['selector'];
+      }
     }
     return $icons;
   }
@@ -111,9 +113,32 @@ class IconifyManager implements IconifyManagerInterface {
   public function getMergedIcons() {
     $icons = [];
     foreach ($this->getPackages() as $iconify) {
-      $icons = array_merge($icons, array_values($iconify['icons']));
+      foreach ($iconify['icons'] as $tag => $info) {
+        $icons[] = $info['selector'];
+      }
     }
     return $icons;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMergedIconsWithData() {
+    $icons = [];
+    foreach ($this->getPackages() as $iconify) {
+      foreach ($iconify['icons'] as $tag => $info) {
+        $icons[$info['selector']] = $info;
+      }
+    }
+    return $icons;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getIconInfo($icon) {
+    $icons = $this->getMergedIconsWithData();
+    return isset($icons[$icon]) ? $icons[$icon] : [];
   }
 
   /**
@@ -156,7 +181,7 @@ class IconifyManager implements IconifyManagerInterface {
       $definitions[$iconify->id()] = [
         'id' => $iconify->id(),
         'label' => $iconify->label(),
-        'icons' => $iconify->getIcons(),
+        'icons' => $iconify->getIconsWithInfo(),
         'status' => $iconify->isPublished(),
       ];
     }

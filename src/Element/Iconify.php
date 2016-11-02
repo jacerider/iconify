@@ -139,12 +139,12 @@ class Iconify extends FormElement {
     if (!empty($include)) {
       $packages = array_intersect_key($packages, $include);
     }
-    foreach ($packages as $id => $data) {
-      foreach ($data['icons'] as $class) {
+    foreach ($packages as $id => $info) {
+      foreach ($info['icons'] as $data) {
         if (count($packages) > 1) {
-          $element['#options'][$data['label']][$class] = $class;
+          $element['#options'][$info['label']][$data['selector']] = $data['selector'];
         } else {
-          $element['#options'][$class] = $class;
+          $element['#options'][$data['selector']] = $data['selector'];
         }
       }
     }

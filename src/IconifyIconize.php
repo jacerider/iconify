@@ -3,10 +3,8 @@
 namespace Drupal\iconify;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\iconify\IconifyInfoManager;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\StringTranslation\TranslationInterface;
-// use Drupal\iconify\Entity\Iconify;
 
 /**
  * Class IconifyIconize.
@@ -21,6 +19,7 @@ class IconifyIconize extends TranslatableMarkup {
    * @var array
    */
   protected $options = [
+    'childrenCount' => FALSE,
     'iconOnly' => FALSE,
     'iconPosition' => 'before',
   ];
@@ -29,6 +28,11 @@ class IconifyIconize extends TranslatableMarkup {
    * The system defined icon replacement definition.
    */
   protected $info = [];
+
+  /**
+   * The icon.
+   */
+  protected $icon = NULL;
 
   /**
    * Constructs a new Iconify object.
@@ -44,6 +48,19 @@ class IconifyIconize extends TranslatableMarkup {
     $options = $options + $this->options;
     parent::__construct($string, $arguments, $options, $string_translation);
     $this->info = \Drupal::service('plugin.manager.iconify.info')->getDefinitions();
+    $this->manager = \Drupal::service('iconify.manager');
+  }
+
+  /**
+   * Return a class instance.
+   */
+  public static function iconize($string, array $arguments = array(), array $options = array(), TranslationInterface $string_translation = NULL) {
+    return new static(
+      $string,
+      $arguments,
+      $options,
+      $string_translation
+    );
   }
 
   /**
@@ -70,15 +87,32 @@ class IconifyIconize extends TranslatableMarkup {
   }
 
   /**
+   * Set the icon string.
+   */
+  public function setIcon($icon = '') {
+    if (empty($icon) && ($info = $this->getIconInfo())) {
+      $icon = $info['icon'];
+    }
+    if ($info = $this->manager->getIconInfo($icon)) {
+      $this->setIconChildrenCount(count($info['code']));
+    }
+    else {
+      $icon = '';
+    }
+    $this->icon = $icon;
+    return $this;
+  }
+
+  /**
    * Returns the icon string.
    *
    * @return string
    */
   public function getIcon() {
-    if ($info = $this->getIconInfo()) {
-      return $info['icon'];
+    if ($this->icon === NULL) {
+      $this->setIcon();
     }
-    return '';
+    return $this->icon;
   }
 
   /**
@@ -91,6 +125,23 @@ class IconifyIconize extends TranslatableMarkup {
       return '<i class="' . $icon . '"></i>';
     }
     return '';
+  }
+
+  /**
+   * Set icon child count.
+   *
+   * @param integer $count
+   *   (optional) Some icons need multiple children selectors. Font glyphs
+   *   cannot have more than one color by default. Using CSS, IcoMoon layers
+   *   multiple glyphs on top of each other to implement multicolor glyphs.
+   *   As a result, these glyphs take more than one character code and cannot
+   *   have ligatures.
+   *
+   * @return $this
+   */
+  public function setIconChildrenCount($count = 1) {
+    $this->options['childrenCount'] = $count;
+    return $this;
   }
 
   /**
@@ -140,6 +191,7 @@ class IconifyIconize extends TranslatableMarkup {
         '#theme' => 'iconify_icon',
         '#icon' => $icon,
         '#text' => $output,
+        '#children_count' => $this->options['childrenCount'],
         '#icon_only' => $this->options['iconOnly'],
         '#position' => $this->options['iconPosition'],
       ];

@@ -77,10 +77,12 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
    *
    * @var array
    */
-  protected $iconsWithHex = [];
+  protected $iconsWithInfo = [];
 
   /**
    * The folder where Iconifys exist.
+   *
+   * @var string
    */
   protected $directory = 'public://iconify';
 
@@ -103,7 +105,7 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
    * Set the archive as base64 encoded string.
    */
   public function setArchive($zip_path) {
-    $data = strtr(base64_encode(addslashes(gzcompress(serialize(file_get_contents($zip_path)),9))), '+/=', '-_,');
+    $data = strtr(base64_encode(addslashes(gzcompress(serialize(file_get_contents($zip_path)), 9))), '+/=', '-_,');
     $parts = str_split($data, 200000);
     $this->set('archive', $parts);
   }
@@ -119,7 +121,8 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
   /**
    * Return the location where Iconifys exist.
    *
-   * @return [string]
+   * @return string
+   *   The unique path to the package directory.
    */
   protected function getDirectory() {
     return $this->directory . '/' . $this->id();
@@ -128,7 +131,8 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
   /**
    * Return the stylesheet of the IcoMoon package if it exists.
    *
-   * @return [string]
+   * @return string
+   *   The path to the IcoMoon style.css file.
    */
   public function getStylesheet() {
     $path = $this->getDirectory() . '/style.css';
@@ -138,7 +142,8 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
   /**
    * Get IcoMoon package information.
    *
-   * @return [array]
+   * @return array
+   *   The information for the IcoMoon package.
    */
   public function getInfo() {
     if (empty($this->info)) {
@@ -171,21 +176,25 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
   /**
    * Get IcoMoon package icons with hex as key.
    */
-  public function getIconsWithHex() {
-    if (empty($this->iconsWithHex) && $info = $this->getInfo()) {
+  public function getIconsWithInfo() {
+    if (empty($this->iconsWithInfo) && $info = $this->getInfo()) {
       $this->icons = array();
       $prefix = $info['preferences']['fontPref']['prefix'];
       foreach ($info['icons'] as $icon) {
         foreach ($icon['icon']['tags'] as $tag) {
-          $this->iconsWithHex[$tag] = [
+          $codes = isset($icon['properties']['codes']) ? $icon['properties']['codes'] : [$icon['properties']['code']];
+          $hex = implode(';', array_map(function ($n) {
+            return '\\' . dechex($n);
+          }, $codes));
+          $this->iconsWithInfo[$tag] = [
             'selector' => $prefix . $tag,
-            'hex' => '\\' . dechex($icon['properties']['code']),
-            'code' => $icon['properties']['code'],
+            'hex' => $hex,
+            'code' => $codes,
           ];
         }
       }
     }
-    return $this->iconsWithHex;
+    return $this->iconsWithInfo;
   }
 
   /**
@@ -273,7 +282,7 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
   /**
    * Properly extract and store an IcoMoon zip file.
    *
-   * @param [string] $zip_path
+   * @param string $zip_path
    *   The absolute path to the zip file.
    */
   public function archiveExtract($zip_path) {
@@ -287,7 +296,7 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
     file_prepare_directory($directory, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
     $archiver->extract($directory);
 
-    // Clean up
+    // Remove unnecessary files.
     file_unmanaged_delete_recursive($directory . '/demo-files');
     file_unmanaged_delete($directory . '/demo.html');
     file_unmanaged_delete($directory . '/Read Me.txt');
@@ -300,7 +309,7 @@ class Iconify extends ConfigEntityBase implements IconifyInterface {
     $file_contents = preg_replace('(\?[a-zA-Z0-9#\-\_]*)', '', $file_contents);
     file_put_contents($file_path, $file_contents);
 
-    drupal_set_message(t('iconifyIcon %name package has been successfully %op.', ['iconifyIcon' => '<i class="fa-drupal"></i>', '%name' => $this->label(), '%op' => ($this->isNew() ? t('added') : t('updated'))]));
+    drupal_set_message(t('%name package has been successfully %op.', ['%name' => $this->label(), '%op' => ($this->isNew() ? t('added') : t('updated'))]));
   }
 
 }

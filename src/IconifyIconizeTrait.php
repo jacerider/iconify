@@ -2,8 +2,6 @@
 
 namespace Drupal\iconify;
 
-use Drupal\Core\StringTranslation\StringTranslationTrait;
-
 /**
  * Wrapper methods for \Drupal\iconify\IconifyIconize.
  *

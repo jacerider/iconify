@@ -45,7 +45,8 @@ class IconifyListBuilder extends EntityListBuilder {
     /* @var $entity \Drupal\iconify\Entity\Iconify */
     $preview = '';
     $icons = $entity->getIcons();
-    foreach (array_rand(array_combine($icons, $icons), 12) as $selector) {
+    $count = count($icons) >= 12 ? 12 : count($icons);
+    foreach (array_rand(array_combine($icons, $icons), $count) as $selector) {
       $icon = ['#theme' => 'iconify_icon', '#icon' => $selector];
       $preview .= drupal_render($icon);
     }

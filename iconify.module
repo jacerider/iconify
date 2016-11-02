@@ -42,7 +42,7 @@ function iconify_theme($existing, $type, $theme, $path) {
   );
   $themes['iconify_icon'] = array(
     'file' => 'iconify.page.inc',
-    'variables' => ['text' => NULL, 'icon' => NULL, 'position' => 'before', 'icon_only' => FALSE],
+    'variables' => ['text' => NULL, 'icon' => NULL, 'children_count' => 1, 'position' => 'before', 'icon_only' => FALSE],
   );
   return $themes;
 }

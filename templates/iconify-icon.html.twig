@@ -1,15 +1,18 @@
+{%
+  set classes = [
+    'icon-label',
+    icon_only ? 'visually-hidden',
+  ]
+%}
+
 {% if icon and position=="before" %}
-  <i class="{{ icon }}"></i>
+  <i class="{{ icon }}">{{ children }}</i>
 {% endif %}
 {% if text %}
-  {% if icon_only %}
-    <span class="visually-hidden">
-  {% endif %}
+  <span {{ attributes.addClass(classes) }}>
     {{ text }}
-  {% if icon_only %}
-    </span>
-  {% endif %}
+  </span>
 {% endif %}
 {% if icon and position=="after" %}
-  <i class="{{ icon }}"></i>
+  <i class="{{ icon }}">{{ children }}</i>
 {% endif %}
