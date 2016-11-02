@@ -34,3 +34,12 @@ revision:
 devel:
   regex: ^devel
   icon: fa-code
+translate:
+  regex: ^translate
+  icon: fa-language
+results:
+  regex: ^results
+  icon: fa-list
+test:
+  regex: ^test
+  icon: fa-code-fork
